@@ -28,4 +28,13 @@ public class UserServices {
 		return user;
 	}
 
+	public Object findByIdAndNameAndEmail(int id, String name, String email) {
+		Optional<User> optional= userRepository.findByIdAndNameAndEmail(id,name,email);
+		User user=optional.get();
+		return user;
+	}
+	public void addUser(User user) {
+		userRepository.save(user);
+	}
+	
 }

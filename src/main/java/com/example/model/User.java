@@ -18,6 +18,7 @@ public class User {
 	private String email;
 	private String pincode;
 	private String gender;
+	private String photo;
 
 	public int getId() {
 		return id;
@@ -77,6 +78,12 @@ public class User {
 	}
 	public void setGender(String gender) {
 		this.gender = gender;
+	}
+	public String getPhoto() {
+		return photo;
+	}
+	public void setPhoto(String photo) {
+		this.photo = photo;
 	}
 	
 	
