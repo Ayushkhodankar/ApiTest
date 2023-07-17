@@ -1,12 +1,16 @@
 package com.example.controller;
 
+import java.net.http.HttpHeaders;
 import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.model.User;
@@ -23,6 +28,10 @@ import com.example.service.UserServices;
 @RestController
 public class UserController extends BaseController {
 
+	
+	private final RestTemplate restTemplate;
+	private final String apiUrl = "Any URL";
+	
 	@PostMapping("/saveDetails")
 	public ResponseEntity<Map> saveDetails(@RequestBody User user) {
 
@@ -128,6 +137,29 @@ public class UserController extends BaseController {
 			response.put("Error Message", "List Can't Be Retrieved");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
+	}
+
+	public UserController(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
+
+	public String getApiResponse(String apiUrl, String bookingId, String custName, String busId, String fromPlace,
+			String toPlace, String description, String busType, String phone) {
+		HttpHeaders headers = new HttpHeaders();
+		StringBuilder sb = new StringBuilder();
+		sb.append(apiUrl);
+		String msg ="to=" + phone + "&msg=HI " + custName + " Confirmed ! Booking ID " + bookingId + ".Trip is "
+				+ busType + " seater bus varient " + busId + " scheduled to start at " + fromPlace + " from pickup location "
+				+ toPlace + " contact details of customer is " + description
+				+ " Forward MEssage";
+		sb.append(msg);
+		System.err.println(sb.toString());
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> entity = new HttpEntity<>(headers);
+
+		ResponseEntity<String> response = restTemplate.exchange(sb.toString(), HttpMethod.GET, entity, String.class);
+
+		return response.getBody();
 	}
 
 }
