@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,10 +25,11 @@ public class UserController extends BaseController {
 
 	@PostMapping("/saveDetails")
 	public ResponseEntity<Map> saveDetails(@RequestBody User user) {
-		Map m= new HashMap();
+
+		Map<String, Object> m = new HashMap<>();
 		try {
 			User savedUser = userRepository.save(user);
-			m.put("Message","User Details Saved Successfully");
+			m.put("Message", "User Details Saved Successfully");
 			m.put("status", true);
 			return new ResponseEntity<Map>(m, HttpStatus.OK);
 		} catch (Exception e) {
@@ -40,85 +42,92 @@ public class UserController extends BaseController {
 	@GetMapping("/UsersList")
 	public ResponseEntity<Map> UsersList() {
 
-		Map m = new HashMap();
+		Map<String, Object> m = new HashMap<>();
 		try {
 			m.put("Users List", userRepository.findAll());
 			m.put("status", true);
-			return new ResponseEntity<Map>(m, HttpStatus.OK);
+			return ResponseEntity.ok(m);
 		} catch (Exception e) {
 			m.put("Error Message", "List Can't Be Retrieved");
 			m.put("status", false);
-			return new ResponseEntity<Map>(m, HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(m);
 		}
 	}
-	
+
 	@GetMapping("/getListById/{id}")
 	public ResponseEntity<Map> getListById(@PathVariable String id) {
-		
-		Map m = new HashMap();
+
+		Map<String, Object> m = new HashMap<>();
 		try {
 			m.put("User", userServices.findById(Integer.parseInt(id)));
 			m.put("status", true);
-			return new ResponseEntity<Map>(m, HttpStatus.OK);
+			return ResponseEntity.ok(m);
 		} catch (Exception e) {
 			m.put("Error Message", "List Can't Be Retrieved");
 			m.put("status", false);
-			return new ResponseEntity<Map>(m, HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(m);
 		}
 	}
-	
+
 	@GetMapping("/getListByIdAndName/{id}/{name}")
-	public ResponseEntity<Map> getListByIdAndName(@PathVariable String id,@PathVariable String name) {
-		
-		Map m = new HashMap();
+	public ResponseEntity<Map> getListByIdAndName(@PathVariable String id, @PathVariable String name) {
+
+		Map<String, Object> m = new HashMap<>();
 		try {
-			m.put("User", userServices.findByIdAndName(Integer.parseInt(id),name));
+			m.put("User", userServices.findByIdAndName(Integer.parseInt(id), name));
 			m.put("status", true);
-			return new ResponseEntity<Map>(m, HttpStatus.OK);
+			return ResponseEntity.ok(m);
 		} catch (Exception e) {
 			m.put("Error Message", "List Can't Be Retrieved");
 			m.put("status", false);
-			return new ResponseEntity<Map>(m, HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(m);
 		}
 	}
-	
 
 	@GetMapping("/getListByIdAndNameAndEmail/{id}/{name}/{email}")
-	public ResponseEntity<Map> getListByIdAndNameAndEmail(@PathVariable String id,@PathVariable String name,@PathVariable String email) {
-		
-		Map m = new HashMap();
+	public ResponseEntity<Map> getListByIdAndNameAndEmail(@PathVariable String id, @PathVariable String name,
+			@PathVariable String email) {
+
+		Map<String, Object> m = new HashMap<>();
 		try {
-			m.put("User", userServices.findByIdAndNameAndEmail(Integer.parseInt(id),name,email));
+			m.put("User", userServices.findByIdAndNameAndEmail(Integer.parseInt(id), name, email));
 			m.put("status", true);
-			return new ResponseEntity<Map>(m, HttpStatus.OK);
+			return ResponseEntity.ok(m);
 		} catch (Exception e) {
 			m.put("Error Message", "List Can't Be Retrieved");
 			m.put("status", false);
-			return new ResponseEntity<Map>(m, HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(m);
 		}
+
 	}
-	
-	@PostMapping("/addImage")
-	public ResponseEntity<Map> addImage(@RequestParam(value ="photo",required = false) MultipartFile photo,
-			@RequestParam("id") String id){try {
-				
-				User user=userServices.findById(Integer.parseInt(id));
-			
-				String filename = photo==null?"": fileStorageService.storeFile(photo,"UserPhoto_"+id);
-				user.setPhoto(filename);
-				userServices.addUser(user);	
-				
-				Map m=new HashMap();
-				m.put("status", true);
-				m.put("message","Success");
-				m.put("id",id);
-				return new ResponseEntity<Map>(m,HttpStatus.OK);
-			
+
+	/*
+	 * @GetMapping("/getListByFromdateAndTodate") public ResponseEntity<Map>
+	 * getListByFromdateAndTodate(@RequestBody User user) {
+	 * 
+	 * Map m = new HashMap(); List<User> userList =
+	 * userServices.findBydateBetween(user.getFromdate(), user.getTodate());
+	 * 
+	 * try { m.put("User", userList); m.put("status", true); return new
+	 * ResponseEntity<Map>(m, HttpStatus.OK); } catch (Exception e) {
+	 * m.put("Error Message", "List Can't Be Retrieved"); m.put("status", false);
+	 * return new ResponseEntity<Map>(m, HttpStatus.INTERNAL_SERVER_ERROR); } }
+	 */
+
+	@GetMapping("/getListByFromdateAndTodate")
+	public ResponseEntity<Map<String, Object>> getListByFromdateAndTodate(@RequestParam Date fromdate ,@RequestParam Date todate) {
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			List<User> userList = userServices.findByDateBetween(fromdate, todate);
+			response.put("User", userList);
+			response.put("status", true);
+			return ResponseEntity.ok(response);
 		} catch (Exception e) {
-			Map m=new HashMap();
-			m.put("status", false);
-			m.put("error",e.getMessage());
-			return new ResponseEntity<Map>(m,HttpStatus.INTERNAL_SERVER_ERROR);
+			response.put("status", false);
+			response.put("Error Message", "List Can't Be Retrieved");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
+
 }

@@ -19,7 +19,23 @@ public class User {
 	private String pincode;
 	private String gender;
 	private String photo;
+//	private String fromdate;
+//	private String todate;
+	private String date;
 
+	public String getDate() {
+		return date;
+	}
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	/*
+	 * public String getFromdate() { return fromdate; } public void
+	 * setFromdate(String fromdate) { this.fromdate = fromdate; } public String
+	 * getTodate() { return todate; } public void setTodate(String todate) {
+	 * this.todate = todate; }
+	 */
 	public int getId() {
 		return id;
 	}

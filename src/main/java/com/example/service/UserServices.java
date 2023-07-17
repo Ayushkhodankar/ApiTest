@@ -1,5 +1,7 @@
 package com.example.service;
 
+import java.sql.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,5 +38,12 @@ public class UserServices {
 	public void addUser(User user) {
 		userRepository.save(user);
 	}
-	
+
+
+	public List<User> findByDateBetween(Date fromdate, Date todate) {
+		List<User> optional= userRepository.findByDateBetween(fromdate,todate);
+		//User user=optional.get();
+			return optional;
+	}
+
 }
